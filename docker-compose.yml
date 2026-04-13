@@ -1,0 +1,31 @@
+# Smart Patient Queue - Docker Compose (Optional)
+# For running PostgreSQL in Docker without local installation
+
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: smart_patient_queue_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: smart_patient_queue
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+
+# Usage:
+# docker-compose up -d  # Start PostgreSQL
+# docker-compose down   # Stop PostgreSQL
+# docker-compose logs   # View logs
